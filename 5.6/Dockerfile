@@ -27,4 +27,6 @@ WORKDIR /code
 
 EXPOSE 9000
 
+ENTRYPOINT [ "./entrypoint.sh" ]
+
 CMD [ "php-fpm" ]
