@@ -2,6 +2,8 @@ FROM php:5.6-fpm-alpine
 
 LABEL author="Outshine"
 
+COPY entrypoint /usr/local/bin
+
 # 设置时区为上海
 RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
@@ -27,6 +29,6 @@ WORKDIR /code
 
 EXPOSE 9000
 
-ENTRYPOINT [ "./entrypoint.sh" ]
+ENTRYPOINT [ "entrypoint" ]
 
 CMD [ "php-fpm" ]
