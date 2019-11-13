@@ -2,8 +2,6 @@ FROM php:5.6-fpm-alpine
 
 LABEL author="Outshine"
 
-COPY entrypoint /usr/local/bin
-
 # 设置时区为上海
 RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
@@ -21,13 +19,19 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php && php -r "unlink('composer-setup.php');" \
     && mv composer.phar /usr/local/bin/composer \
     && chmod a+x /usr/local/bin/composer \
-    && composer global require hirak/prestissimo -vv --prefer-dist
+    && composer global require hirak/prestissimo -o --prefer-dist
 
 VOLUME [ "/code" ]
 
 WORKDIR /code
 
 EXPOSE 9000
+
+STOPSIGNAL SIGQUIT
+
+COPY entrypoint /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/entrypoint
 
 ENTRYPOINT [ "entrypoint" ]
 
