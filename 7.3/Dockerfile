@@ -1,16 +1,17 @@
 FROM php:7.3-fpm-alpine
 
-LABEL author="Outshine"
-
 # 设置时区为上海
-RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+RUN apk add --no-cache tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
     && apk del tzdata
 
 # 安装一些依赖和（我认为）必要的组件
-RUN apk add --no-cache supervisor autoconf libjpeg-turbo-dev libpng-dev freetype-dev libzip-dev \
+RUN apk add --no-cache supervisor autoconf libjpeg-turbo-dev libpng-dev freetype-dev libzip-dev gcc g++ make libffi-dev openssl-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install bcmath pdo_mysql mysqli pcntl gd opcache zip
+    && docker-php-ext-install bcmath pdo_mysql mysqli pcntl gd opcache zip sockets \
+    && yes | pecl install swoole \
+    && echo no | pecl install redis \
+    && docker-php-ext-enable swoole redis
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
